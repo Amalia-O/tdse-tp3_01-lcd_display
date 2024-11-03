@@ -56,8 +56,19 @@ void userInterfaceUpdate()
 
 static void userInterfaceDisplayInit()
 {
-    displayInit( DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER );
-     
+    //aca hay que hacer la copilacion condiiconal para modificar los bits
+    #if (TEST_X == TEST_0)
+        displayInit( DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER );
+    #endif
+
+    #if ( TEST_X == TEST_1 )
+        displayInit( DISPLAY_CONNECTION_GPIO_4BITS );
+    #endif
+
+    #if (TEST_X == TEST_2)
+        displayInit( DISPLAY_CONNECTION_GPIO_8BITS );
+    #endif
+    
     displayCharPositionWrite ( 0,0 );
     displayStringWrite( "Temperature:" );
 }
