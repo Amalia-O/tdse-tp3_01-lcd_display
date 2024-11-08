@@ -1,8 +1,8 @@
 //=====[Libraries]=============================================================
 
 #include "mbed.h"
-#include "arm_book_lib.h"
 #include "display.h"
+#include "PinNames.h"
 
 //=====[Declaration of private defines]========================================
 
@@ -56,8 +56,8 @@
 
 #define DISPLAY_PIN_A_PCF8574 3
 
-#define I2C1_SDA PB_7
-#define I2C1_SCL PB_6
+#define I2C1_SDA PB_9
+#define I2C1_SCL PB_8
 
 #define PCF8574_I2C_BUS_8BIT_WRITE_ADDRESS 78
 
@@ -77,6 +77,8 @@ typedef struct{
 } pcf8574_t;
 
 //=====[Declaration and initialization of public global objects]===============
+
+
 
 DigitalOut displayD0( D10 );
 DigitalOut displayD1( D11 );
@@ -122,22 +124,22 @@ void displayInit( displayConnection_t connection )
     
     initial8BitCommunicationIsCompleted = false;    
 
-    delay( 50 );
+    HAL_Delay( 50 );
     
     displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
                       DISPLAY_IR_FUNCTION_SET | 
                       DISPLAY_IR_FUNCTION_SET_8BITS );
-    delay( 5 );
+    HAL_Delay( 5 );
             
     displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
                       DISPLAY_IR_FUNCTION_SET | 
                       DISPLAY_IR_FUNCTION_SET_8BITS );
-    delay( 1 ); 
+    HAL_Delay( 1 ); 
 
     displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
                       DISPLAY_IR_FUNCTION_SET | 
                       DISPLAY_IR_FUNCTION_SET_8BITS );
-    delay( 1 );  
+    HAL_Delay( 1 );  
 
     switch( display.connection ) {
         case DISPLAY_CONNECTION_GPIO_8BITS:
@@ -146,7 +148,7 @@ void displayInit( displayConnection_t connection )
                               DISPLAY_IR_FUNCTION_SET_8BITS | 
                               DISPLAY_IR_FUNCTION_SET_2LINES |
                               DISPLAY_IR_FUNCTION_SET_5x8DOTS );
-            delay( 1 );         
+            HAL_Delay( 1 );         
         break;
         
         case DISPLAY_CONNECTION_GPIO_4BITS:
@@ -154,7 +156,7 @@ void displayInit( displayConnection_t connection )
             displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
                               DISPLAY_IR_FUNCTION_SET | 
                               DISPLAY_IR_FUNCTION_SET_4BITS );
-            delay( 1 );  
+            HAL_Delay( 1 );  
 
             initial8BitCommunicationIsCompleted = true;  
 
@@ -163,7 +165,7 @@ void displayInit( displayConnection_t connection )
                               DISPLAY_IR_FUNCTION_SET_4BITS | 
                               DISPLAY_IR_FUNCTION_SET_2LINES |
                               DISPLAY_IR_FUNCTION_SET_5x8DOTS );
-            delay( 1 );                                      
+            HAL_Delay( 1 );                                      
         break;
     }
 
@@ -172,24 +174,24 @@ void displayInit( displayConnection_t connection )
                       DISPLAY_IR_DISPLAY_CONTROL_DISPLAY_OFF |      
                       DISPLAY_IR_DISPLAY_CONTROL_CURSOR_OFF |       
                       DISPLAY_IR_DISPLAY_CONTROL_BLINK_OFF );       
-    delay( 1 );          
+    HAL_Delay( 1 );          
 
     displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
                       DISPLAY_IR_CLEAR_DISPLAY );       
-    delay( 1 ); 
+    HAL_Delay( 1 ); 
 
     displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
                       DISPLAY_IR_ENTRY_MODE_SET |
                       DISPLAY_IR_ENTRY_MODE_SET_INCREMENT |       
                       DISPLAY_IR_ENTRY_MODE_SET_NO_SHIFT );                  
-    delay( 1 );           
+    HAL_Delay( 1 );           
 
     displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
                       DISPLAY_IR_DISPLAY_CONTROL |
                       DISPLAY_IR_DISPLAY_CONTROL_DISPLAY_ON |      
                       DISPLAY_IR_DISPLAY_CONTROL_CURSOR_OFF |    
                       DISPLAY_IR_DISPLAY_CONTROL_BLINK_OFF );    
-    delay( 1 );  
+    HAL_Delay( 1 );  
 }
 
 void displayCharPositionWrite( uint8_t charPositionX, uint8_t charPositionY )
@@ -200,7 +202,7 @@ void displayCharPositionWrite( uint8_t charPositionX, uint8_t charPositionY )
                               DISPLAY_IR_SET_DDRAM_ADDR |
                               ( DISPLAY_20x4_LINE1_FIRST_CHARACTER_ADDRESS +
                                 charPositionX ) );
-            delay( 1 );         
+            HAL_Delay( 1 );         
         break;
        
         case 1:
@@ -208,7 +210,7 @@ void displayCharPositionWrite( uint8_t charPositionX, uint8_t charPositionY )
                               DISPLAY_IR_SET_DDRAM_ADDR |
                               ( DISPLAY_20x4_LINE2_FIRST_CHARACTER_ADDRESS +
                                 charPositionX ) );
-            delay( 1 );         
+            HAL_Delay( 1 );         
         break;
        
         case 2:
@@ -216,7 +218,7 @@ void displayCharPositionWrite( uint8_t charPositionX, uint8_t charPositionY )
                               DISPLAY_IR_SET_DDRAM_ADDR |
                               ( DISPLAY_20x4_LINE3_FIRST_CHARACTER_ADDRESS +
                                 charPositionX ) );
-            delay( 1 );         
+            HAL_Delay( 1 );         
         break;
 
         case 3:
@@ -224,7 +226,7 @@ void displayCharPositionWrite( uint8_t charPositionX, uint8_t charPositionY )
                               DISPLAY_IR_SET_DDRAM_ADDR |
                               ( DISPLAY_20x4_LINE4_FIRST_CHARACTER_ADDRESS +
                                 charPositionX ) );
-            delay( 1 );         
+            HAL_Delay( 1 );         
         break;
     }
 }
@@ -241,6 +243,7 @@ void displayStringWrite( const char * str )
 static void displayCodeWrite( bool type, uint8_t dataBus )
 {
     if ( type == DISPLAY_RS_INSTRUCTION ){
+        
         displayPinWrite( DISPLAY_PIN_RS, DISPLAY_RS_INSTRUCTION);
     }else{
         displayPinWrite( DISPLAY_PIN_RS, DISPLAY_RS_DATA);
@@ -291,6 +294,7 @@ static void displayPinWrite( uint8_t pinName, int value )
                     case DISPLAY_PIN_EN: pcf8574.displayPinEn = ON; break;
                     case DISPLAY_PIN_RW: pcf8574.displayPinRw = ON; break;
                     case DISPLAY_PIN_A_PCF8574: pcf8574.displayPinA = ON; break;
+
                     default: break;
                 }
             }else {
@@ -315,6 +319,7 @@ static void displayPinWrite( uint8_t pinName, int value )
             if ( pcf8574.displayPinD5 ) pcf8574.data |= 0b00100000; 
             if ( pcf8574.displayPinD6 ) pcf8574.data |= 0b01000000; 
             if ( pcf8574.displayPinD7 ) pcf8574.data |= 0b10000000; 
+            //HAL_I2C_Master_Transmit((I2C_HandleTypeDef *)&hi2c1, (uint16_t)pcf8574.address, (uint8_t *)&pcf8574.data, (uint16_t)16, (uint32_t)HAL_MAX_DELAY);
             i2cPcf8574.write( pcf8574.address, &pcf8574.data, 1);
             break;    
     }
@@ -339,9 +344,9 @@ static void displayDataBusWrite( uint8_t dataBus )
         case DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER:
             if ( initial8BitCommunicationIsCompleted == true) {
                 displayPinWrite( DISPLAY_PIN_EN, ON );         
-                delay( 1 );
+                HAL_Delay( 1 );
                 displayPinWrite( DISPLAY_PIN_EN, OFF );              
-                delay( 1 );        
+                HAL_Delay( 1 );        
                 displayPinWrite( DISPLAY_PIN_D7, dataBus & 0b00001000 );
                 displayPinWrite( DISPLAY_PIN_D6, dataBus & 0b00000100 );  
                 displayPinWrite( DISPLAY_PIN_D5, dataBus & 0b00000010 );      
@@ -351,7 +356,7 @@ static void displayDataBusWrite( uint8_t dataBus )
     
     }
     displayPinWrite( DISPLAY_PIN_EN, ON );              
-    delay( 1 );
+    HAL_Delay( 1 );
     displayPinWrite( DISPLAY_PIN_EN, OFF );  
-    delay( 1 );                   
+    HAL_Delay( 1 );                   
 }
