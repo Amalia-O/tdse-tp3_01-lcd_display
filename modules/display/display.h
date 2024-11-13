@@ -6,6 +6,7 @@
 //=====[Declaration of public defines]=========================================
 #include <stdint.h>
 #include <stdio.h>
+
 #define TEST_0 (0)
 #define TEST_1 (1)
 #define TEST_2 (2)
@@ -14,7 +15,7 @@
     {0,     1,      2}
 */
 
-#define TEST_X (TEST_0)
+#define TEST_X (TEST_1)
 #define SYSTEM_TIME_INCREMENT_MS   10
 #define DISPLAY_REFRESH_TIME_MS 1000
 
@@ -36,6 +37,43 @@
 
 #define delay(ms)      thread_sleep_for( ms )
 
+//pines 
+
+#define B1_Pin GPIO_PIN_13
+#define B1_GPIO_Port GPIOC
+#define B1_EXTI_IRQn EXTI15_10_IRQn
+#define USART_TX_Pin GPIO_PIN_2
+#define USART_TX_GPIO_Port GPIOA
+#define USART_RX_Pin GPIO_PIN_3
+#define USART_RX_GPIO_Port GPIOA
+#define LD2_Pin GPIO_PIN_5
+#define LD2_GPIO_Port GPIOA
+#define D12_Pin GPIO_PIN_6
+#define D12_GPIO_Port GPIOA
+#define D11_Pin GPIO_PIN_7
+#define D11_GPIO_Port GPIOA
+#define D6_Pin GPIO_PIN_10
+#define D6_GPIO_Port GPIOB
+#define D9_Pin GPIO_PIN_7
+#define D9_GPIO_Port GPIOC
+#define D7_Pin GPIO_PIN_8
+#define D7_GPIO_Port GPIOA
+#define D8_Pin GPIO_PIN_9
+#define D8_GPIO_Port GPIOA
+#define D2_Pin GPIO_PIN_10
+#define D2_GPIO_Port GPIOA
+#define TMS_Pin GPIO_PIN_13
+#define TMS_GPIO_Port GPIOA
+#define TCK_Pin GPIO_PIN_14
+#define TCK_GPIO_Port GPIOA
+#define SWO_Pin GPIO_PIN_3
+#define SWO_GPIO_Port GPIOB
+#define D5_Pin GPIO_PIN_4
+#define D5_GPIO_Port GPIOB
+#define D4_Pin GPIO_PIN_5
+#define D4_GPIO_Port GPIOB
+#define D10_Pin GPIO_PIN_6
+#define D10_GPIO_Port GPIOB
 
 //=====[Declaration of public data types]======================================
 
@@ -59,48 +97,9 @@ void displayStringWrite( const char * str );
 
 static uint32_t contador =0;
 
-inline static void DisplayInit(){
-    contador = 0;
-    //aca hay que hacer la copilacion condiiconal para modificar los bits
-    #if (TEST_X == TEST_0)
-        displayInit( DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER );
-    #endif
+void DisplayInit();
 
-    #if ( TEST_X == TEST_1 )
-        displayInit( DISPLAY_CONNECTION_GPIO_4BITS );
-    #endif
-
-    #if (TEST_X == TEST_2)
-        displayInit( DISPLAY_CONNECTION_GPIO_8BITS );
-    #endif
-    
-    displayCharPositionWrite ( 0,0 );
-    displayStringWrite( "Temperature:" );
-}
-
-
-inline static void DisplayUpdate()
-{
-    static int accumulatedDisplayTime = 0;
-    char temperatureString[3] = "";
-    
-    if( accumulatedDisplayTime >=
-        DISPLAY_REFRESH_TIME_MS ) {
-
-        accumulatedDisplayTime = 0;
-
-        sprintf(temperatureString, "%.0d", contador++);
-        displayCharPositionWrite ( 12,0 );
-        displayStringWrite( temperatureString );
-        displayCharPositionWrite ( 14,0 );
-        displayStringWrite( "'C" );
-
-    } else {
-        accumulatedDisplayTime =
-            accumulatedDisplayTime + SYSTEM_TIME_INCREMENT_MS;        
-    }
-    
-}
+void DisplayUpdate();
 
 //=====[#include guards - end]=================================================
 

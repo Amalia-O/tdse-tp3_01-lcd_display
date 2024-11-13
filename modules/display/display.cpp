@@ -1,8 +1,10 @@
 //=====[Libraries]=============================================================
 
-#include "mbed.h"
+//#include "mbed.h"
 #include "display.h"
-#include "PinNames.h"
+#include <stdbool.h>
+#include "stm32f1xx_hal.h"
+//#include "PinNames.h"
 
 //=====[Declaration of private defines]========================================
 
@@ -56,8 +58,8 @@
 
 #define DISPLAY_PIN_A_PCF8574 3
 
-#define I2C1_SDA PB_9
-#define I2C1_SCL PB_8
+#define I2C1_SDA PB_8
+#define I2C1_SCL PB_9
 
 #define PCF8574_I2C_BUS_8BIT_WRITE_ADDRESS 78
 
@@ -80,7 +82,7 @@ typedef struct{
 
 
 
-DigitalOut displayD0( D10 );
+/*DigitalOut displayD0( D10 );
 DigitalOut displayD1( D11 );
 DigitalOut displayD2( D2 );
 DigitalOut displayD3( D12 );
@@ -89,9 +91,9 @@ DigitalOut displayD5( D5 );
 DigitalOut displayD6( D6 );
 DigitalOut displayD7( D7 );
 DigitalOut displayRs( D8 );
-DigitalOut displayEn( D9 );
+DigitalOut displayEn( D9 );*/
 
-I2C i2cPcf8574( I2C1_SDA, I2C1_SCL ); 
+//I2C i2cPcf8574( I2C1_SDA, I2C1_SCL );
 
 //=====[Declaration of external public global variables]=======================
 
@@ -118,10 +120,10 @@ void displayInit( displayConnection_t connection )
     if( display.connection == DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER) {
         pcf8574.address = PCF8574_I2C_BUS_8BIT_WRITE_ADDRESS;
         pcf8574.data = 0b00000000;
-        i2cPcf8574.frequency(100000);
+        //i2cPcf8574.frequency(100000);
         displayPinWrite( DISPLAY_PIN_A_PCF8574,  ON );
     } 
-    
+
     initial8BitCommunicationIsCompleted = false;    
 
     HAL_Delay( 50 );
@@ -167,6 +169,7 @@ void displayInit( displayConnection_t connection )
                               DISPLAY_IR_FUNCTION_SET_5x8DOTS );
             HAL_Delay( 1 );                                      
         break;
+
     }
 
     displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
@@ -257,36 +260,77 @@ static void displayPinWrite( uint8_t pinName, int value )
     switch( display.connection ) {
         case DISPLAY_CONNECTION_GPIO_8BITS:
             switch( pinName ) {
-                case DISPLAY_PIN_D0: displayD0 = value;   break;
-                case DISPLAY_PIN_D1: displayD1 = value;   break;
-                case DISPLAY_PIN_D2: displayD2 = value;   break;
-                case DISPLAY_PIN_D3: displayD3 = value;   break;
-                case DISPLAY_PIN_D4: displayD4 = value;   break;
-                case DISPLAY_PIN_D5: displayD5 = value;   break;
-                case DISPLAY_PIN_D6: displayD6 = value;   break;
-                case DISPLAY_PIN_D7: displayD7 = value;   break;
-                case DISPLAY_PIN_RS: displayRs = value;   break;
-                case DISPLAY_PIN_EN: displayEn = value;   break;
+                //case DISPLAY_PIN_D0: displayD0 = value;   break;
+            	case DISPLAY_PIN_D0:
+            		HAL_GPIO_WritePin((GPIO_TypeDef *)D10_GPIO_Port, (uint16_t)D10_Pin, (GPIO_PinState)value);
+            		break;
+
+            	case DISPLAY_PIN_D1:
+            		HAL_GPIO_WritePin((GPIO_TypeDef *)D11_GPIO_Port, (uint16_t)D11_Pin, (GPIO_PinState)value);
+            		break;
+                case DISPLAY_PIN_D2:
+                	HAL_GPIO_WritePin((GPIO_TypeDef *)D2_GPIO_Port, (uint16_t)D2_Pin, (GPIO_PinState)value);
+                	break;
+                case DISPLAY_PIN_D3:
+                	HAL_GPIO_WritePin((GPIO_TypeDef *)D12_GPIO_Port, (uint16_t)D12_Pin, (GPIO_PinState)value);
+                	break;
+                case DISPLAY_PIN_D4:
+                	HAL_GPIO_WritePin((GPIO_TypeDef *)D4_GPIO_Port, (uint16_t)D4_Pin, (GPIO_PinState)value);
+                	break;
+                case DISPLAY_PIN_D5:
+                	HAL_GPIO_WritePin((GPIO_TypeDef *)D5_GPIO_Port, (uint16_t)D5_Pin, (GPIO_PinState)value);
+                	break;
+                case DISPLAY_PIN_D6:
+                	HAL_GPIO_WritePin((GPIO_TypeDef *)D6_GPIO_Port, (uint16_t)D6_Pin, (GPIO_PinState)value);
+                	break;
+                case DISPLAY_PIN_D7:
+                	HAL_GPIO_WritePin((GPIO_TypeDef *)D7_GPIO_Port, (uint16_t)D7_Pin, (GPIO_PinState)value);
+                	break;
+                case DISPLAY_PIN_RS:
+                	HAL_GPIO_WritePin((GPIO_TypeDef *)D8_GPIO_Port, (uint16_t)D8_Pin, (GPIO_PinState)value);
+                	break;
+                case DISPLAY_PIN_EN:
+                	HAL_GPIO_WritePin((GPIO_TypeDef *)D9_GPIO_Port, (uint16_t)D9_Pin, (GPIO_PinState)value);
+                	break;
                 case DISPLAY_PIN_RW: break; 
                 default: break;
             }
             break;
         case DISPLAY_CONNECTION_GPIO_4BITS:
             switch( pinName ) {
-                case DISPLAY_PIN_D4: displayD4 = value;   break;
+            case DISPLAY_PIN_D4:
+            	HAL_GPIO_WritePin((GPIO_TypeDef *)D4_GPIO_Port, (uint16_t)D4_Pin, (GPIO_PinState)value);
+            	break;
+            case DISPLAY_PIN_D5:
+            	HAL_GPIO_WritePin((GPIO_TypeDef *)D5_GPIO_Port, (uint16_t)D5_Pin, (GPIO_PinState)value);
+                break;
+            case DISPLAY_PIN_D6:
+            	HAL_GPIO_WritePin((GPIO_TypeDef *)D6_GPIO_Port, (uint16_t)D6_Pin, (GPIO_PinState)value);
+            	break;
+            case DISPLAY_PIN_D7:
+            	HAL_GPIO_WritePin((GPIO_TypeDef *)D7_GPIO_Port, (uint16_t)D7_Pin, (GPIO_PinState)value);
+            	break;
+            case DISPLAY_PIN_RS:
+            	HAL_GPIO_WritePin((GPIO_TypeDef *)D8_GPIO_Port, (uint16_t)D8_Pin, (GPIO_PinState)value);
+            	break;
+            case DISPLAY_PIN_EN:
+            	HAL_GPIO_WritePin((GPIO_TypeDef *)D9_GPIO_Port, (uint16_t)D9_Pin, (GPIO_PinState)value);
+            	break;
+            case DISPLAY_PIN_RW: break;
+                /*case DISPLAY_PIN_D4: displayD4 = value;   break;
                 case DISPLAY_PIN_D5: displayD5 = value;   break;
                 case DISPLAY_PIN_D6: displayD6 = value;   break;
                 case DISPLAY_PIN_D7: displayD7 = value;   break;
                 case DISPLAY_PIN_RS: displayRs = value;   break;
                 case DISPLAY_PIN_EN: displayEn = value;   break;
-                case DISPLAY_PIN_RW: break; 
+                case DISPLAY_PIN_RW: break; */
                 default: break;
             }
             break;
         case DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER:
            if ( value ) {
                 switch( pinName ) {
-                    case DISPLAY_PIN_D4: pcf8574.displayPinD4 = ON; break;
+                   case DISPLAY_PIN_D4: pcf8574.displayPinD4 = ON; break;
                     case DISPLAY_PIN_D5: pcf8574.displayPinD5 = ON; break;
                     case DISPLAY_PIN_D6: pcf8574.displayPinD6 = ON; break;
                     case DISPLAY_PIN_D7: pcf8574.displayPinD7 = ON; break;
@@ -320,7 +364,7 @@ static void displayPinWrite( uint8_t pinName, int value )
             if ( pcf8574.displayPinD6 ) pcf8574.data |= 0b01000000; 
             if ( pcf8574.displayPinD7 ) pcf8574.data |= 0b10000000; 
             //HAL_I2C_Master_Transmit((I2C_HandleTypeDef *)&hi2c1, (uint16_t)pcf8574.address, (uint8_t *)&pcf8574.data, (uint16_t)16, (uint32_t)HAL_MAX_DELAY);
-            i2cPcf8574.write( pcf8574.address, &pcf8574.data, 1);
+            //i2cPcf8574.write( pcf8574.address, &pcf8574.data, 1);
             break;    
     }
 }
@@ -360,3 +404,51 @@ static void displayDataBusWrite( uint8_t dataBus )
     displayPinWrite( DISPLAY_PIN_EN, OFF );  
     HAL_Delay( 1 );                   
 }
+
+
+void DisplayInit(){
+    contador = 0;
+
+    //aca hay que hacer la copilacion condiiconal para modificar los bits
+    #if (TEST_X == TEST_0)
+        displayInit( DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER );
+    #endif
+
+    #if ( TEST_X == TEST_1 )
+        displayInit( DISPLAY_CONNECTION_GPIO_4BITS );
+    #endif
+
+    #if (TEST_X == TEST_2)
+        displayInit( DISPLAY_CONNECTION_GPIO_8BITS );
+
+    #endif
+
+    displayCharPositionWrite ( 0,0 );
+    displayStringWrite( "Temperatura:" );
+}
+
+
+void DisplayUpdate()
+{
+    static int accumulatedDisplayTime = 0;
+    char temperatureString[3] = "";
+
+    if( accumulatedDisplayTime >=
+        DISPLAY_REFRESH_TIME_MS ) {
+
+        accumulatedDisplayTime = 0;
+
+        sprintf(temperatureString, "%.0u", contador++);
+        displayCharPositionWrite ( 12,0 );
+        displayStringWrite( temperatureString );
+        displayCharPositionWrite ( 14,0 );
+        displayStringWrite( "'C" );
+
+    } else {
+        accumulatedDisplayTime =
+            accumulatedDisplayTime + SYSTEM_TIME_INCREMENT_MS;
+    }
+
+}
+
+
